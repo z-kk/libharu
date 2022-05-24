@@ -2,4 +2,6 @@ nimcache/
 nimblecache/
 htmldocs/
 
+tests/*.ttf
+
 *.swp
