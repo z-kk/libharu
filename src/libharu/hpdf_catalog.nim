@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_catalog.h
 ##
@@ -21,7 +23,7 @@ import
 type
   HPDF_Catalog* = HPDF_Dict
 
-{.push dynlib: "libhpdf.so".}
+{.push dynlib: hpdfDynlib, hpdfCall.}
 proc HPDF_Catalog_New*(mmgr: HPDF_MMgr; xref: HPDF_Xref): HPDF_Catalog {.importc.}
 proc HPDF_Catalog_GetNames*(catalog: HPDF_Catalog): HPDF_NameDict {.importc.}
 proc HPDF_Catalog_SetNames*(catalog: HPDF_Catalog; dict: HPDF_NameDict): HPDF_STATUS {.importc.}

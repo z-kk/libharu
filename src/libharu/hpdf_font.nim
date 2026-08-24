@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_font.h
 ##
@@ -22,17 +24,17 @@ import
 ## ----- Writing Mode ---------------------------------------------------------
 
 type
-  HPDF_FontType* = enum
+  HPDF_FontType* {.size: sizeof(cint).} = enum
     HPDF_FONT_TYPE1 = 0, HPDF_FONT_TRUETYPE, HPDF_FONT_TYPE3, HPDF_FONT_TYPE0_CID,
     HPDF_FONT_TYPE0_TT, HPDF_FONT_CID_TYPE0, HPDF_FONT_CID_TYPE2, HPDF_FONT_MMTYPE1
   HPDF_Font* = HPDF_Dict
   HPDF_Font_TextWidths_Func* = proc (font: HPDF_Font; text: ptr HPDF_BYTE;
-                                  len: HPDF_UINT): HPDF_TextWidth
+                                  len: HPDF_UINT): HPDF_TextWidth {.hpdfCall.}
   HPDF_Font_MeasureText_Func* = proc (font: HPDF_Font; text: ptr HPDF_BYTE;
                                    len: HPDF_UINT; width: HPDF_REAL;
                                    fontsize: HPDF_REAL; charspace: HPDF_REAL;
                                    wordspace: HPDF_REAL; wordwrap: HPDF_BOOL;
-                                   real_width: ptr HPDF_REAL): HPDF_UINT
+                                   real_width: ptr HPDF_REAL): HPDF_UINT {.hpdfCall.}
   HPDF_FontAttr_Rec* {.bycopy.} = object
     `type`*: HPDF_FontType
     writing_mode*: HPDF_WritingMode
@@ -53,7 +55,7 @@ type
 
 
 
-{.push dynlib: "libhpdf.so".}
+{.push dynlib: hpdfDynlib, hpdfCall.}
 proc HPDF_Type1Font_New*(mmgr: HPDF_MMgr; fontdef: HPDF_FontDef;
                         encoder: HPDF_Encoder; xref: HPDF_Xref): HPDF_Font {.importc.}
 proc HPDF_TTFont_New*(mmgr: HPDF_MMgr; fontdef: HPDF_FontDef; encoder: HPDF_Encoder;

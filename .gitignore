@@ -1,5 +1,6 @@
 nimcache/
 nimblecache/
 htmldocs/
+tests/test_libharu
 
 *.swp

@@ -10,3 +10,6 @@ srcDir        = "src"
 # Dependencies
 
 requires "nim >= 1.2.0"
+
+task test, "Run the deterministic binding tests":
+  exec "nim c -r tests/test_libharu.nim"

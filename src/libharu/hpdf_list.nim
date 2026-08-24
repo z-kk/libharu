@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_list.h
 ##
@@ -29,7 +31,7 @@ type
   HPDF_List* = ptr HPDF_List_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+{.push dynlib: hpdfDynlib, hpdfCall.}
 proc HPDF_List_New*(mmgr: HPDF_MMgr; items_per_block: HPDF_UINT): HPDF_List {.importc.}
 proc HPDF_List_Free*(list: HPDF_List) {.importc.}
 proc HPDF_List_Add*(list: HPDF_List; item: pointer): HPDF_STATUS {.importc.}

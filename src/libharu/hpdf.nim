@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library 2.0.8 >> -- hpdf.h
 ##
@@ -16,16 +18,16 @@
 
 import
   hpdf_types, hpdf_doc, hpdf_objects, hpdf_font, hpdf_fontdef, hpdf_streams, hpdf_encoder, hpdf_error, hpdf_mmgr,
-  hpdf_consts
+  hpdf_consts, hpdf_version
 
 export
   hpdf_types, hpdf_doc, hpdf_objects, hpdf_font, hpdf_fontdef, hpdf_streams, hpdf_encoder, hpdf_error, hpdf_mmgr,
-  hpdf_consts
+  hpdf_consts, hpdf_version
 
 template HPDF_UNUSED*(a: untyped): untyped =
   ((void)(a))
 
-{.push dynlib: "libhpdf.so".}
+{.push dynlib: hpdfDynlib, hpdfCall.}
 proc HPDF_GetVersion*(): cstring {.importc.}
 proc HPDF_NewEx*(user_error_fn: HPDF_Error_Handler; user_alloc_fn: HPDF_Alloc_Func;
                 user_free_fn: HPDF_Free_Func; mem_pool_buf_size: HPDF_UINT;
@@ -127,7 +129,14 @@ proc HPDF_UseUTFEncodings*(pdf: HPDF_Doc): HPDF_STATUS {.importc.}
 ## --------------------------------------------------------------------------
 ## ----- annotation ---------------------------------------------------------
 
-proc HPDF_Page_Create3DAnnot*(page: HPDF_Page; rect: HPDF_Rect; u3d: HPDF_U3D): HPDF_Annotation {.importc.}
+proc HPDF_Page_Create3DAnnot*(page: HPDF_Page; rect: HPDF_Rect; tb, np: HPDF_BOOL;
+                             u3d: HPDF_U3D;
+                             ap: HPDF_Image): HPDF_Annotation {.importc.}
+
+proc HPDF_Page_Create3DAnnot*(page: HPDF_Page; rect: HPDF_Rect;
+                             u3d: HPDF_U3D): HPDF_Annotation
+    {.deprecated: "pass the tb, np, and ap arguments required by libharu 2.4".} =
+  HPDF_Page_Create3DAnnot(page, rect, HPDF_FALSE, HPDF_FALSE, u3d, nil)
 proc HPDF_Page_CreateTextAnnot*(page: HPDF_Page; rect: HPDF_Rect; text: cstring;
                                encoder: HPDF_Encoder): HPDF_Annotation {.importc.}
 proc HPDF_Page_CreateFreeTextAnnot*(page: HPDF_Page; rect: HPDF_Rect; text: cstring;
@@ -136,9 +145,6 @@ proc HPDF_Page_CreateLineAnnot*(page: HPDF_Page; text: cstring; encoder: HPDF_En
 proc HPDF_Page_CreateLinkAnnot*(page: HPDF_Page; rect: HPDF_Rect;
                                dst: HPDF_Destination): HPDF_Annotation {.importc.}
 proc HPDF_Page_CreateURILinkAnnot*(page: HPDF_Page; rect: HPDF_Rect; uri: cstring): HPDF_Annotation {.importc.}
-proc HPDF_Page_CreateTextMarkupAnnot*(page: HPDF_Page; rect: HPDF_Rect;
-                                     text: cstring; encoder: HPDF_Encoder;
-                                     subType: HPDF_AnnotType): HPDF_Annotation {.importc.}
 proc HPDF_Page_CreateHighlightAnnot*(page: HPDF_Page; rect: HPDF_Rect; text: cstring;
                                     encoder: HPDF_Encoder): HPDF_Annotation {.importc.}
 proc HPDF_Page_CreateUnderlineAnnot*(page: HPDF_Page; rect: HPDF_Rect; text: cstring;
@@ -397,8 +403,18 @@ proc HPDF_Page_SetLineJoin*(page: HPDF_Page; line_join: HPDF_LineJoin): HPDF_STA
 proc HPDF_Page_SetMiterLimit*(page: HPDF_Page; miter_limit: HPDF_REAL): HPDF_STATUS {.importc.}
 ##  d
 
+proc HPDF_Page_SetDash*(page: HPDF_Page; dash_ptn: ptr HPDF_REAL;
+                       num_param: HPDF_UINT; phase: HPDF_REAL): HPDF_STATUS {.importc.}
+
 proc HPDF_Page_SetDash*(page: HPDF_Page; dash_ptn: ptr HPDF_UINT16;
-                       num_param: HPDF_UINT; phase: HPDF_UINT): HPDF_STATUS {.importc.}
+                       num_param: HPDF_UINT; phase: HPDF_UINT): HPDF_STATUS
+    {.deprecated: "use HPDF_REAL dash values and phase".} =
+  var converted = newSeq[HPDF_REAL](num_param.int)
+  let oldValues = cast[ptr UncheckedArray[HPDF_UINT16]](dash_ptn)
+  for index in 0 ..< num_param.int:
+    converted[index] = HPDF_REAL(oldValues[index])
+  let convertedPtr = if converted.len == 0: nil else: addr converted[0]
+  HPDF_Page_SetDash(page, convertedPtr, num_param, HPDF_REAL(phase))
 ##  ri --not implemented yet
 ##  i
 
@@ -606,4 +622,52 @@ proc HPDF_ICC_LoadIccFromMem*(pdf: HPDF_Doc; mmgr: HPDF_MMgr; iccdata: HPDF_Stre
                              xref: HPDF_Xref; numcomponent: cint): HPDF_OutputIntent {.importc.}
 proc HPDF_LoadIccProfileFromFile*(pdf: HPDF_Doc; icc_file_name: cstring;
                                  numcomponent: cint): HPDF_OutputIntent {.importc.}
+
+## Public API added through libharu 2.4.6.
+proc HPDF_GetDocMMgr*(doc: HPDF_Doc): HPDF_MMgr {.importc.}
+proc HPDF_SetPDFAConformance*(pdf: HPDF_Doc;
+                             pdfa_type: HPDF_PDFAType): HPDF_STATUS {.importc.}
+proc HPDF_AddPDFAXmpExtension*(pdf: HPDF_Doc;
+                              xmp_description: cstring): HPDF_STATUS {.importc.}
+proc HPDF_AppendOutputIntents*(pdf: HPDF_Doc; iccname: cstring;
+                              iccdict: HPDF_Dict): HPDF_STATUS {.importc.}
+proc HPDF_GetPageMMgr*(page: HPDF_Page): HPDF_MMgr {.importc.}
+proc HPDF_Page_SetBoundary*(page: HPDF_Page; boundary: HPDF_PageBoundary;
+                           left, bottom, right, top: HPDF_REAL): HPDF_STATUS {.importc.}
+proc HPDF_LoadTTFontFromMemory*(pdf: HPDF_Doc; buffer: ptr HPDF_BYTE;
+                               size: HPDF_UINT;
+                               embedding: HPDF_BOOL): cstring {.importc.}
+proc HPDF_Page_CreateXObjectFromImage*(pdf: HPDF_Doc; page: HPDF_Page;
+                                      rect: HPDF_Rect; image: HPDF_Image;
+                                      zoom: HPDF_BOOL): HPDF_XObject {.importc.}
+proc HPDF_Page_CreateXObjectAsWhiteRect*(pdf: HPDF_Doc; page: HPDF_Page;
+                                        rect: HPDF_Rect): HPDF_XObject {.importc.}
+proc HPDF_Page_CreateWidgetAnnot_WhiteOnlyWhilePrint*(pdf: HPDF_Doc;
+    page: HPDF_Page; rect: HPDF_Rect): HPDF_Annotation {.importc.}
+proc HPDF_Page_CreateWidgetAnnot*(page: HPDF_Page;
+                                 rect: HPDF_Rect): HPDF_Annotation {.importc.}
+proc HPDF_LinkAnnot_SetJavaScript*(annot: HPDF_Annotation;
+                                  javascript: HPDF_JavaScript): HPDF_STATUS {.importc.}
+proc HPDF_EmbeddedFile_SetName*(emfile: HPDF_EmbeddedFile;
+                               name: cstring): HPDF_STATUS {.importc.}
+proc HPDF_EmbeddedFile_SetDescription*(emfile: HPDF_EmbeddedFile;
+    new_description: cstring): HPDF_STATUS {.importc.}
+proc HPDF_EmbeddedFile_SetSubtype*(emfile: HPDF_EmbeddedFile;
+                                  subtype: cstring): HPDF_STATUS {.importc.}
+proc HPDF_EmbeddedFile_SetAFRelationship*(emfile: HPDF_EmbeddedFile;
+    relationship: HPDF_AFRelationship): HPDF_STATUS {.importc.}
+proc HPDF_EmbeddedFile_SetSize*(emfile: HPDF_EmbeddedFile;
+                               size: HPDF_UINT64): HPDF_STATUS {.importc.}
+proc HPDF_EmbeddedFile_SetCreationDate*(emfile: HPDF_EmbeddedFile;
+                                       creationDate: HPDF_Date): HPDF_STATUS {.importc.}
+proc HPDF_EmbeddedFile_SetLastModificationDate*(emfile: HPDF_EmbeddedFile;
+    lastModificationDate: HPDF_Date): HPDF_STATUS {.importc.}
+proc HPDF_Page_SetShading*(page: HPDF_Page;
+                          shading: HPDF_Shading): HPDF_STATUS {.importc.}
+proc HPDF_Shading_New*(pdf: HPDF_Doc; shadingType: HPDF_ShadingType;
+                      colorSpace: HPDF_ColorSpace; xMin, xMax, yMin,
+                      yMax: HPDF_REAL): HPDF_Shading {.importc.}
+proc HPDF_Shading_AddVertexRGB*(shading: HPDF_Shading;
+    edgeFlag: HPDF_Shading_FreeFormTriangleMeshEdgeFlag; x, y: HPDF_REAL;
+    r, g, b: HPDF_UINT8): HPDF_STATUS {.importc.}
 {.pop.}

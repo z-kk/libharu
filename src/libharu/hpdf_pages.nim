@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_pages.c
 ##
@@ -21,7 +23,7 @@ import
 ## ----------------------------------------------------------------------------
 ## ----- HPDF_Pages -----------------------------------------------------------
 
-{.push dynlib: "libhpdf.so".}
+{.push dynlib: hpdfDynlib, hpdfCall.}
 proc HPDF_Pages_New*(mmgr: HPDF_MMgr; parent: HPDF_Pages; xref: HPDF_Xref): HPDF_Pages {.importc.}
 proc HPDF_Pages_Validate*(pages: HPDF_Pages): HPDF_BOOL {.importc.}
 proc HPDF_Pages_AddKids*(parent: HPDF_Pages; kid: HPDF_Dict): HPDF_STATUS {.importc.}
@@ -50,7 +52,7 @@ type
 ## ----------------------------------------------------------------------------
 ## ----- HPDF_Page ------------------------------------------------------------
 
-{.push dynlib: "libhpdf.so".}
+{.push dynlib: hpdfDynlib, hpdfCall.}
 proc HPDF_Page_Validate*(page: HPDF_Page): HPDF_BOOL {.importc.}
 proc HPDF_Page_New*(mmgr: HPDF_MMgr; xref: HPDF_Xref): HPDF_Page {.importc.}
 proc HPDF_Page_GetInheritableItem*(page: HPDF_Page; key: cstring;
