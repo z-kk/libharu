@@ -57,7 +57,7 @@ type
 ## ----------------------------------------------------------------------------
 ## ----------------------------------------------------------------------------
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_GState_New*(mmgr: HPDF_MMgr; current: HPDF_GState): HPDF_GState {.importc.}
 proc HPDF_GState_Free*(mmgr: HPDF_MMgr; gstate: HPDF_GState): HPDF_GState {.importc.}
 {.pop.}

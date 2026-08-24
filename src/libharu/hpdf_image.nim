@@ -20,7 +20,7 @@ include hpdf_lib
 import
   hpdf_objects, hpdf_types, hpdf_streams, hpdf_mmgr
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_Image_Load1BitImageFromMem*(mmgr: HPDF_MMgr; buf: ptr HPDF_BYTE;
                                      xref: HPDF_Xref; width: HPDF_UINT;
                                      height: HPDF_UINT; line_width: HPDF_UINT;

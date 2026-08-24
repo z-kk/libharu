@@ -47,7 +47,7 @@ type
 ##   if buf_size is non-zero, mmgr is configured to be using memory-pool
 ##
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_MMgr_New*(error: HPDF_Error; buf_size: HPDF_UINT;
                    alloc_fn: HPDF_Alloc_Func; free_fn: HPDF_Free_Func): HPDF_MMgr {.importc.}
 proc HPDF_MMgr_Free*(mmgr: HPDF_MMgr) {.importc.}

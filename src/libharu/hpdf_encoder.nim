@@ -107,7 +107,7 @@ type
 
 
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_Encoder_Validate*(encoder: HPDF_Encoder): HPDF_STATUS {.importc.}
 proc HPDF_Encoder_SetParseText*(encoder: HPDF_Encoder;
                                state: ptr HPDF_ParseText_Rec; text: ptr HPDF_BYTE;
@@ -129,7 +129,7 @@ type
   HPDF_BasicEncoderAttr* = ptr HPDF_BasicEncoderAttr_Rec
 
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_BasicEncoder_New*(mmgr: HPDF_MMgr; encoding_name: cstring): HPDF_Encoder {.importc.}
 proc HPDF_BasicEncoder_Free*(encoder: HPDF_Encoder) {.importc.}
 proc HPDF_BasicEncoder_Write*(encoder: HPDF_Encoder; `out`: HPDF_Stream): HPDF_STATUS {.importc.}
@@ -166,7 +166,7 @@ type
   HPDF_CMapEncoderAttr* = ptr HPDF_CMapEncoderAttr_Rec
 
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_CMapEncoder_New*(mmgr: HPDF_MMgr; name: cstring;
                           init_fn: HPDF_Encoder_Init_Func): HPDF_Encoder {.importc.}
 proc HPDF_CMapEncoder_InitAttr*(encoder: HPDF_Encoder): HPDF_STATUS {.importc.}

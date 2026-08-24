@@ -20,7 +20,7 @@ include hpdf_lib
 import
   hpdf_doc, hpdf_objects, hpdf_types
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_PDFA_AppendOutputIntents*(pdf: HPDF_Doc; iccname: cstring;
                                    iccdict: HPDF_Dict): HPDF_STATUS {.importc.}
 proc HPDF_PDFA_SetPDFAConformance*(pdf: HPDF_Doc; pdfatype: HPDF_PDFAType): HPDF_STATUS {.importc.}

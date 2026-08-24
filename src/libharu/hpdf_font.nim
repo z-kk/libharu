@@ -55,7 +55,7 @@ type
 
 
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_Type1Font_New*(mmgr: HPDF_MMgr; fontdef: HPDF_FontDef;
                         encoder: HPDF_Encoder; xref: HPDF_Xref): HPDF_Font {.importc.}
 proc HPDF_TTFont_New*(mmgr: HPDF_MMgr; fontdef: HPDF_FontDef; encoder: HPDF_Encoder;

@@ -234,7 +234,9 @@ type
     HPDF_LINECAP_EOF
 
 const
-  HPDF_PROJECTING_SCUARE_END* {.deprecated: "use HPDF_PROJECTING_SQUARE_END".} =
+  # Kept as an unannotated compatibility alias because Nim 1.6 does not
+  # support the deprecated pragma on constants.
+  HPDF_PROJECTING_SCUARE_END* =
     HPDF_PROJECTING_SQUARE_END
 
 
@@ -378,7 +380,9 @@ type
     HPDF_TALIGN_LEFT = 0, HPDF_TALIGN_RIGHT, HPDF_TALIGN_CENTER, HPDF_TALIGN_JUSTIFY
 
 const
-  HPDF_BYTE_TYPE_TRIAL* {.deprecated: "use HPDF_BYTE_TYPE_TRAIL".} =
+  # Kept as an unannotated compatibility alias because Nim 1.6 does not
+  # support the deprecated pragma on constants.
+  HPDF_BYTE_TYPE_TRIAL* =
     HPDF_BYTE_TYPE_TRAIL
 
 

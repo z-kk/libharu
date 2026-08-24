@@ -27,7 +27,7 @@ export
 template HPDF_UNUSED*(a: untyped): untyped =
   ((void)(a))
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_GetVersion*(): cstring {.importc.}
 proc HPDF_NewEx*(user_error_fn: HPDF_Error_Handler; user_alloc_fn: HPDF_Alloc_Func;
                 user_free_fn: HPDF_Free_Func; mem_pool_buf_size: HPDF_UINT;

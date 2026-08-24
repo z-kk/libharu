@@ -110,7 +110,7 @@ type
   HPDF_FontDef* = ptr HPDF_FontDef_Rec
 
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_FontDef_Free*(fontdef: HPDF_FontDef) {.importc.}
 proc HPDF_FontDef_Cleanup*(fontdef: HPDF_FontDef) {.importc.}
 proc HPDF_FontDef_Validate*(fontdef: HPDF_FontDef): HPDF_BOOL {.importc.}
@@ -136,7 +136,7 @@ type
   HPDF_Type1FontDefAttr* = ptr HPDF_Type1FontDefAttr_Rec
 
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_Type1FontDef_New*(mmgr: HPDF_MMgr): HPDF_FontDef {.importc.}
 proc HPDF_Type1FontDef_Load*(mmgr: HPDF_MMgr; afm: HPDF_Stream;
                             font_data: HPDF_Stream): HPDF_FontDef {.importc.}
@@ -252,7 +252,7 @@ type
   HPDF_TTFontDefAttr* = ptr HPDF_TTFontDefAttr_Rec
 
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_TTFontDef_New*(mmgr: HPDF_MMgr): HPDF_FontDef {.importc.}
 proc HPDF_TTFontDef_Load*(mmgr: HPDF_MMgr; stream: HPDF_Stream; embedding: HPDF_BOOL): HPDF_FontDef {.importc.}
 proc HPDF_TTFontDef_Load2*(mmgr: HPDF_MMgr; stream: HPDF_Stream; index: HPDF_UINT;
@@ -275,7 +275,7 @@ type
   HPDF_CIDFontDefAttr* = ptr HPDF_CIDFontDefAttr_Rec
 
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_CIDFontDef_New*(mmgr: HPDF_MMgr; name: cstring;
                          init_fn: HPDF_FontDef_InitFunc): HPDF_FontDef {.importc.}
 proc HPDF_CIDFontDef_AddWidth*(fontdef: HPDF_FontDef; widths: ptr HPDF_CID_Width): HPDF_STATUS {.importc.}

@@ -78,7 +78,7 @@ type
   HPDF_Encrypt* = ptr HPDF_Encrypt_Rec
 
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_MD5Init*(ctx: ptr HPDF_MD5_CTX) {.importc.}
 proc HPDF_MD5Update*(ctx: ptr HPDF_MD5_CTX; buf: ptr HPDF_BYTE; len: HPDF_UINT32) {.importc.}
 proc HPDF_MD5Final*(digest: array[16, HPDF_BYTE]; ctx: ptr HPDF_MD5_CTX) {.importc.}

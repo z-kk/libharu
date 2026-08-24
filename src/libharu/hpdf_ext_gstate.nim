@@ -20,7 +20,7 @@ include hpdf_lib
 import
   hpdf_objects, hpdf_types, hpdf_mmgr
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_ExtGState_New*(mmgr: HPDF_MMgr; xref: HPDF_Xref): HPDF_Dict {.importc.}
 proc HPDF_ExtGState_Validate*(ext_gstate: HPDF_ExtGState): HPDF_BOOL {.importc.}
 {.pop.}

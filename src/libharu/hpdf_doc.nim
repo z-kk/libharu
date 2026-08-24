@@ -57,7 +57,7 @@ type
 
   HPDF_Doc* = ptr HPDF_Doc_Rec
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_Doc_FindEncoder*(pdf: HPDF_Doc; encoding_name: cstring): HPDF_Encoder {.importc.}
 proc HPDF_Doc_FindFontDef*(pdf: HPDF_Doc; font_name: cstring): HPDF_FontDef {.importc.}
 proc HPDF_Doc_FindFont*(pdf: HPDF_Doc; font_name: cstring; encoding_name: cstring): HPDF_Font {.importc.}

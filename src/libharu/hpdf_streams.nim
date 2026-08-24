@@ -78,7 +78,7 @@ type
 
 
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_MemStream_New*(mmgr: HPDF_MMgr; buf_siz: HPDF_UINT): HPDF_Stream {.importc.}
 proc HPDF_MemStream_GetBufPtr*(stream: HPDF_Stream; index: HPDF_UINT;
                               length: ptr HPDF_UINT): ptr HPDF_BYTE {.importc.}

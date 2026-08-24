@@ -23,7 +23,7 @@ import
 ## ----------------------------------------------------------------------------
 ## ----- HPDF_Outline ---------------------------------------------------------
 
-{.push dynlib: hpdfDynlib, hpdfCall.}
+include hpdf_import
 proc HPDF_OutlineRoot_New*(mmgr: HPDF_MMgr; xref: HPDF_Xref): HPDF_Outline {.importc.}
 proc HPDF_Outline_New*(mmgr: HPDF_MMgr; parent: HPDF_Outline; title: cstring;
                       encoder: HPDF_Encoder; xref: HPDF_Xref): HPDF_Outline {.importc.}
