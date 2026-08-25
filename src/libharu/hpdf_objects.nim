@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_objects.c
 ##
@@ -70,7 +72,7 @@ const
 ##   3       reserved
 ##   4       shadow-object
 ##   5-8     reserved
-##   9-32    object-idÅi0-8388607Åj
+##   9-32    object-idÔºà0-8388607Ôºâ
 ##
 ##   the real Object-ID is described "obj_id & 0x00FFFFFF"
 ##
@@ -82,7 +84,7 @@ type
     obj_class*: HPDF_UINT16
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Obj_WriteValue*(obj: pointer; stream: HPDF_Stream; e: HPDF_Encrypt): HPDF_STATUS {.importc.}
 proc HPDF_Obj_Write*(obj: pointer; stream: HPDF_Stream; e: HPDF_Encrypt): HPDF_STATUS {.importc.}
 proc HPDF_Obj_Free*(mmgr: HPDF_MMgr; obj: pointer) {.importc.}
@@ -97,7 +99,7 @@ type
   HPDF_Null* = ptr HPDF_Null_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Null_New*(mmgr: HPDF_MMgr): HPDF_Null {.importc.}
 {.pop.}
 ## ---------------------------------------------------------------------------
@@ -110,7 +112,7 @@ type
   HPDF_Boolean* = ptr HPDF_Boolean_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Boolean_New*(mmgr: HPDF_MMgr; value: HPDF_BOOL): HPDF_Boolean {.importc.}
 proc HPDF_Boolean_Write*(obj: HPDF_Boolean; stream: HPDF_Stream): HPDF_STATUS {.importc.}
 {.pop.}
@@ -124,7 +126,7 @@ type
   HPDF_Number* = ptr HPDF_Number_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Number_New*(mmgr: HPDF_MMgr; value: HPDF_INT32): HPDF_Number {.importc.}
 proc HPDF_Number_SetValue*(obj: HPDF_Number; value: HPDF_INT32) {.importc.}
 proc HPDF_Number_Write*(obj: HPDF_Number; stream: HPDF_Stream): HPDF_STATUS {.importc.}
@@ -140,7 +142,7 @@ type
   HPDF_Real = ptr HPDF_Real_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Real_New*(mmgr: HPDF_MMgr; value: HPDF_REAL): HPDF_Real {.importc.}
 proc HPDF_Real_Write*(obj: HPDF_Real; stream: HPDF_Stream): HPDF_STATUS {.importc.}
 proc HPDF_Real_SetValue*(obj: HPDF_Real; value: HPDF_REAL): HPDF_STATUS {.importc.}
@@ -156,7 +158,7 @@ type
   HPDF_Name* = ptr HPDF_Name_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Name_New*(mmgr: HPDF_MMgr; value: cstring): HPDF_Name {.importc.}
 proc HPDF_Name_SetValue*(obj: HPDF_Name; value: cstring): HPDF_STATUS {.importc.}
 proc HPDF_Name_Write*(obj: HPDF_Name; stream: HPDF_Stream): HPDF_STATUS {.importc.}
@@ -176,7 +178,7 @@ type
   HPDF_String* = ptr HPDF_String_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_String_New*(mmgr: HPDF_MMgr; value: cstring; encoder: HPDF_Encoder): HPDF_String {.importc.}
 proc HPDF_String_SetValue*(obj: HPDF_String; value: cstring): HPDF_STATUS {.importc.}
 proc HPDF_String_Free*(obj: HPDF_String) {.importc.}
@@ -196,7 +198,7 @@ type
   HPDF_Binary* = ptr HPDF_Binary_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Binary_New*(mmgr: HPDF_MMgr; value: ptr HPDF_BYTE; len: HPDF_UINT): HPDF_Binary {.importc.}
 proc HPDF_Binary_SetValue*(obj: HPDF_Binary; value: ptr HPDF_BYTE; len: HPDF_UINT): HPDF_STATUS {.importc.}
 proc HPDF_Binary_GetValue*(obj: HPDF_Binary): ptr HPDF_BYTE {.importc.}
@@ -216,7 +218,7 @@ type
   HPDF_Array* = ptr HPDF_Array_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Array_New*(mmgr: HPDF_MMgr): HPDF_Array {.importc.}
 proc HPDF_Box_Array_New*(mmgr: HPDF_MMgr; box: HPDF_Box): HPDF_Array {.importc.}
 proc HPDF_Array_Free*(array: HPDF_Array) {.importc.}
@@ -234,10 +236,10 @@ proc HPDF_Array_Items*(array: HPDF_Array): HPDF_UINT {.importc.}
 ## ----- HPDF_Dict -----------------------------------------------------------
 
 type
-  HPDF_Dict_FreeFunc* = proc (obj: HPDF_Dict)
-  HPDF_Dict_BeforeWriteFunc* = proc (obj: HPDF_Dict): HPDF_STATUS
-  HPDF_Dict_AfterWriteFunc* = proc (obj: HPDF_Dict): HPDF_STATUS
-  HPDF_Dict_OnWriteFunc* = proc (obj: HPDF_Dict; stream: HPDF_Stream): HPDF_STATUS
+  HPDF_Dict_FreeFunc* = proc (obj: HPDF_Dict) {.hpdfCall.}
+  HPDF_Dict_BeforeWriteFunc* = proc (obj: HPDF_Dict): HPDF_STATUS {.hpdfCall.}
+  HPDF_Dict_AfterWriteFunc* = proc (obj: HPDF_Dict): HPDF_STATUS {.hpdfCall.}
+  HPDF_Dict_OnWriteFunc* = proc (obj: HPDF_Dict; stream: HPDF_Stream): HPDF_STATUS {.hpdfCall.}
   HPDF_Dict_Rec* {.bycopy.} = object
     header*: HPDF_Obj_Header
     mmgr*: HPDF_MMgr
@@ -259,7 +261,7 @@ type
   HPDF_DictElement* = ptr HPDF_DictElement_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Dict_New*(mmgr: HPDF_MMgr): HPDF_Dict {.importc.}
 proc HPDF_Dict_Free*(dict: HPDF_Dict) {.importc.}
 proc HPDF_Dict_Write*(dict: HPDF_Dict; stream: HPDF_Stream; e: HPDF_Encrypt): HPDF_STATUS {.importc.}
@@ -294,7 +296,7 @@ type
   HPDF_Xref* = ptr HPDF_Xref_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_DictStream_New*(mmgr: HPDF_MMgr; xref: HPDF_Xref): HPDF_Dict {.importc.}
 proc HPDF_Xref_New*(mmgr: HPDF_MMgr; offset: HPDF_UINT32): HPDF_Xref {.importc.}
 proc HPDF_Xref_Free*(xref: HPDF_Xref) {.importc.}
@@ -313,7 +315,7 @@ type
   HPDF_Proxy* = ptr HPDF_Proxy_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Proxy_New*(mmgr: HPDF_MMgr; obj: pointer): HPDF_Proxy {.importc.}
 {.pop.}
 type
@@ -335,3 +337,4 @@ type
   HPDF_U3D* = HPDF_Dict
   HPDF_OutputIntent* = HPDF_Dict
   HPDF_JavaScript* = HPDF_Dict
+  HPDF_Shading* = HPDF_Dict

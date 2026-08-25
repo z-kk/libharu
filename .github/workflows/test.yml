@@ -1,0 +1,59 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  LIBHARU_VERSION: 2.4.6
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        nim-version:
+          - 1.6.20
+          - stable
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ matrix.nim-version }}
+
+      - name: Build libharu 2.4.6
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake libpng-dev poppler-utils zlib1g-dev
+          curl -L --fail --retry 3 \
+            -o "$RUNNER_TEMP/libharu.tar.gz" \
+            "https://github.com/libharu/libharu/archive/refs/tags/v${LIBHARU_VERSION}.tar.gz"
+          tar -xzf "$RUNNER_TEMP/libharu.tar.gz" -C "$RUNNER_TEMP"
+          cmake \
+            -S "$RUNNER_TEMP/libharu-${LIBHARU_VERSION}" \
+            -B "$RUNNER_TEMP/libharu-build" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=ON \
+            -DLIBHPDF_EXAMPLES=OFF
+          cmake --build "$RUNNER_TEMP/libharu-build" --parallel 2
+
+      - name: Check package
+        run: nimble check
+
+      - name: Check public API and symbols
+        run: |
+          python3 tests/check_public_api.py \
+            "$RUNNER_TEMP/libharu-${LIBHARU_VERSION}/include/hpdf.h" \
+            "$RUNNER_TEMP/libharu-build/src/libhpdf.so"
+
+      - name: Run tests
+        run: nimble test -y
+        env:
+          LD_LIBRARY_PATH: ${{ runner.temp }}/libharu-build/src

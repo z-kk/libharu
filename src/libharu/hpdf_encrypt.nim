@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_encrypt.h
 ##
@@ -76,11 +78,15 @@ type
   HPDF_Encrypt* = ptr HPDF_Encrypt_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_MD5Init*(ctx: ptr HPDF_MD5_CTX) {.importc.}
 proc HPDF_MD5Update*(ctx: ptr HPDF_MD5_CTX; buf: ptr HPDF_BYTE; len: HPDF_UINT32) {.importc.}
 proc HPDF_MD5Final*(digest: array[16, HPDF_BYTE]; ctx: ptr HPDF_MD5_CTX) {.importc.}
-proc HPDF_PadOrTrancatePasswd*(pwd: cstring; new_pwd: ptr HPDF_BYTE) {.importc.}
+proc HPDF_PadOrTruncatePasswd*(pwd: cstring; new_pwd: ptr HPDF_BYTE) {.importc.}
+
+proc HPDF_PadOrTrancatePasswd*(pwd: cstring; new_pwd: ptr HPDF_BYTE)
+    {.deprecated: "use HPDF_PadOrTruncatePasswd".} =
+  HPDF_PadOrTruncatePasswd(pwd, new_pwd)
 proc HPDF_Encrypt_Init*(attr: HPDF_Encrypt) {.importc.}
 proc HPDF_Encrypt_CreateUserKey*(attr: HPDF_Encrypt) {.importc.}
 proc HPDF_Encrypt_CreateOwnerKey*(attr: HPDF_Encrypt) {.importc.}

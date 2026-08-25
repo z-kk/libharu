@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_encoder.h
 ##
@@ -63,7 +65,7 @@ const
   char_NOTDEF* = ".notdef"
 
 type
-  HPDF_EncodingType* = enum
+  HPDF_EncodingType* {.size: sizeof(cint).} = enum
     HPDF_STANDARD_ENCODING = 0, HPDF_MAC_ROMAN_ENCODING, HPDF_WIN_ANSI_ENCODING,
     HPDF_FONT_SPECIFIC, HPDF_ENCODING_EOF
   HPDF_ParseText_Rec* {.bycopy.} = object
@@ -73,13 +75,13 @@ type
     byte_type*: HPDF_ByteType
 
   HPDF_Encoder_ByteType_Func* = proc (encoder: HPDF_Encoder;
-                                   state: ptr HPDF_ParseText_Rec): HPDF_ByteType
-  HPDF_Encoder_ToUnicode_Func* = proc (encoder: HPDF_Encoder; code: HPDF_UINT16): HPDF_UNICODE
+                                   state: ptr HPDF_ParseText_Rec): HPDF_ByteType {.hpdfCall.}
+  HPDF_Encoder_ToUnicode_Func* = proc (encoder: HPDF_Encoder; code: HPDF_UINT16): HPDF_UNICODE {.hpdfCall.}
   HPDF_Encoder_EncodeText_Func* = proc (encoder: HPDF_Encoder; text: cstring;
-                                     len: HPDF_UINT; encoded_length: ptr HPDF_UINT): cstring
-  HPDF_Encoder_Write_Func* = proc (encoder: HPDF_Encoder; `out`: HPDF_Stream): HPDF_STATUS
-  HPDF_Encoder_Init_Func* = proc (encoder: HPDF_Encoder): HPDF_STATUS
-  HPDF_Encoder_Free_Func* = proc (encoder: HPDF_Encoder)
+                                     len: HPDF_UINT; encoded_length: ptr HPDF_UINT): cstring {.hpdfCall.}
+  HPDF_Encoder_Write_Func* = proc (encoder: HPDF_Encoder; `out`: HPDF_Stream): HPDF_STATUS {.hpdfCall.}
+  HPDF_Encoder_Init_Func* = proc (encoder: HPDF_Encoder): HPDF_STATUS {.hpdfCall.}
+  HPDF_Encoder_Free_Func* = proc (encoder: HPDF_Encoder) {.hpdfCall.}
   HPDF_Encoder_Rec* {.bycopy.} = object
     sig_bytes*: HPDF_UINT32
     name*: array[HPDF_LIMIT_MAX_NAME_LEN + 1, char]
@@ -98,14 +100,14 @@ type
     attr*: pointer
   HPDF_Encoder* = ptr HPDF_Encoder_Rec
 
-  HPDF_BaseEncodings* = enum
+  HPDF_BaseEncodings* {.size: sizeof(cint).} = enum
     HPDF_BASE_ENCODING_STANDARD, HPDF_BASE_ENCODING_WIN_ANSI,
     HPDF_BASE_ENCODING_MAC_ROMAN, HPDF_BASE_ENCODING_FONT_SPECIFIC,
     HPDF_BASE_ENCODING_EOF
 
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Encoder_Validate*(encoder: HPDF_Encoder): HPDF_STATUS {.importc.}
 proc HPDF_Encoder_SetParseText*(encoder: HPDF_Encoder;
                                state: ptr HPDF_ParseText_Rec; text: ptr HPDF_BYTE;
@@ -127,7 +129,7 @@ type
   HPDF_BasicEncoderAttr* = ptr HPDF_BasicEncoderAttr_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_BasicEncoder_New*(mmgr: HPDF_MMgr; encoding_name: cstring): HPDF_Encoder {.importc.}
 proc HPDF_BasicEncoder_Free*(encoder: HPDF_Encoder) {.importc.}
 proc HPDF_BasicEncoder_Write*(encoder: HPDF_Encoder; `out`: HPDF_Stream): HPDF_STATUS {.importc.}
@@ -136,7 +138,7 @@ proc HPDF_BasicEncoder_ToUnicode*(encoder: HPDF_Encoder; code: HPDF_UINT16): HPD
 ## -- HPDF_CMapEncoder ----------------------------------
 
 type
-  HPDF_CMapEncoder_ByteType_Func* = proc (encoder: HPDF_Encoder; b: HPDF_BYTE): HPDF_BOOL
+  HPDF_CMapEncoder_ByteType_Func* = proc (encoder: HPDF_Encoder; b: HPDF_BYTE): HPDF_BOOL {.hpdfCall.}
   HPDF_CidRange_Rec* {.bycopy.} = object
     `from`*: HPDF_UINT16
     to*: HPDF_UINT16
@@ -164,7 +166,7 @@ type
   HPDF_CMapEncoderAttr* = ptr HPDF_CMapEncoderAttr_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_CMapEncoder_New*(mmgr: HPDF_MMgr; name: cstring;
                           init_fn: HPDF_Encoder_Init_Func): HPDF_Encoder {.importc.}
 proc HPDF_CMapEncoder_InitAttr*(encoder: HPDF_Encoder): HPDF_STATUS {.importc.}
@@ -174,7 +176,10 @@ proc HPDF_CMapEncoder_ToUnicode*(encoder: HPDF_Encoder; code: HPDF_UINT16): HPDF
 proc HPDF_CMapEncoder_ToCID*(encoder: HPDF_Encoder; code: HPDF_UINT16): HPDF_UINT16 {.importc.}
 proc HPDF_CMapEncoder_SetParseText*(encoder: HPDF_Encoder;
                                    state: ptr HPDF_ParseText_Rec;
-                                   text: ptr HPDF_BYTE; len: HPDF_UINT): HPDF_STATUS {.importc.}
+                                   text: ptr HPDF_BYTE;
+                                   len: HPDF_UINT): HPDF_STATUS
+    {.deprecated: "use HPDF_Encoder_SetParseText".} =
+  HPDF_Encoder_SetParseText(encoder, state, text, len)
 proc HPDF_CMapEncoder_ByteType*(encoder: HPDF_Encoder;
                                state: ptr HPDF_ParseText_Rec): HPDF_ByteType {.importc.}
 proc HPDF_CMapEncoder_AddCMap*(encoder: HPDF_Encoder; range: ptr HPDF_CidRange_Rec): HPDF_STATUS {.importc.}
@@ -188,6 +193,14 @@ proc HPDF_CMapEncoder_AddJWWLineHead*(encoder: HPDF_Encoder; code: ptr HPDF_UINT
 proc HPDF_Encoder_CheckJWWLineHead*(encoder: HPDF_Encoder; code: HPDF_UINT16): HPDF_BOOL {.importc.}
 ## -- utility functions ----------------------------------
 
-proc HPDF_UnicodeToGryphName*(unicode: HPDF_UNICODE): cstring {.importc.}
-proc HPDF_GryphNameToUnicode*(gryph_name: cstring): HPDF_UNICODE {.importc.}
+proc HPDF_UnicodeToGlyphName*(unicode: HPDF_UNICODE): cstring {.importc.}
+proc HPDF_GlyphNameToUnicode*(glyph_name: cstring): HPDF_UNICODE {.importc.}
+
+proc HPDF_UnicodeToGryphName*(unicode: HPDF_UNICODE): cstring
+    {.deprecated: "use HPDF_UnicodeToGlyphName".} =
+  HPDF_UnicodeToGlyphName(unicode)
+
+proc HPDF_GryphNameToUnicode*(gryph_name: cstring): HPDF_UNICODE
+    {.deprecated: "use HPDF_GlyphNameToUnicode".} =
+  HPDF_GlyphNameToUnicode(gryph_name)
 {.pop.}

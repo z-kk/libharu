@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_error.h
 ##
@@ -150,7 +152,7 @@ type
 ##
 ##
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Error_Init*(error: HPDF_Error; user_data: pointer) {.importc.}
 proc HPDF_Error_Reset*(error: HPDF_Error) {.importc.}
 proc HPDF_Error_GetCode*(error: HPDF_Error): HPDF_STATUS {.importc.}

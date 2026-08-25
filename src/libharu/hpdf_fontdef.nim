@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_fontdef.h
 ##
@@ -61,7 +63,7 @@ type
     unicode*: HPDF_UNICODE
     width*: HPDF_INT16
 
-  HPDF_FontDefType* = enum
+  HPDF_FontDefType* {.size: sizeof(cint).} = enum
     HPDF_FONTDEF_TYPE_TYPE1, HPDF_FONTDEF_TYPE_TRUETYPE, HPDF_FONTDEF_TYPE_CID,
     HPDF_FONTDEF_TYPE_UNINITIALIZED, HPDF_FONTDEF_TYPE_EOF
   HPDF_CID_Width* {.bycopy.} = object
@@ -74,9 +76,9 @@ type
 ## ----- HPDF_FontDef ---------------------------------------------------------
 
 type
-  HPDF_FontDef_FreeFunc* = proc (fontdef: HPDF_FontDef)
-  HPDF_FontDef_CleanFunc* = proc (fontdef: HPDF_FontDef)
-  HPDF_FontDef_InitFunc* = proc (fontdef: HPDF_FontDef): HPDF_STATUS
+  HPDF_FontDef_FreeFunc* = proc (fontdef: HPDF_FontDef) {.hpdfCall.}
+  HPDF_FontDef_CleanFunc* = proc (fontdef: HPDF_FontDef) {.hpdfCall.}
+  HPDF_FontDef_InitFunc* = proc (fontdef: HPDF_FontDef): HPDF_STATUS {.hpdfCall.}
   HPDF_FontDef_Rec* {.bycopy.} = object
     sig_bytes*: HPDF_UINT32
     base_font*: array[HPDF_LIMIT_MAX_NAME_LEN + 1, char]
@@ -108,7 +110,7 @@ type
   HPDF_FontDef* = ptr HPDF_FontDef_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_FontDef_Free*(fontdef: HPDF_FontDef) {.importc.}
 proc HPDF_FontDef_Cleanup*(fontdef: HPDF_FontDef) {.importc.}
 proc HPDF_FontDef_Validate*(fontdef: HPDF_FontDef): HPDF_BOOL {.importc.}
@@ -134,7 +136,7 @@ type
   HPDF_Type1FontDefAttr* = ptr HPDF_Type1FontDefAttr_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Type1FontDef_New*(mmgr: HPDF_MMgr): HPDF_FontDef {.importc.}
 proc HPDF_Type1FontDef_Load*(mmgr: HPDF_MMgr; afm: HPDF_Stream;
                             font_data: HPDF_Stream): HPDF_FontDef {.importc.}
@@ -250,7 +252,7 @@ type
   HPDF_TTFontDefAttr* = ptr HPDF_TTFontDefAttr_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_TTFontDef_New*(mmgr: HPDF_MMgr): HPDF_FontDef {.importc.}
 proc HPDF_TTFontDef_Load*(mmgr: HPDF_MMgr; stream: HPDF_Stream; embedding: HPDF_BOOL): HPDF_FontDef {.importc.}
 proc HPDF_TTFontDef_Load2*(mmgr: HPDF_MMgr; stream: HPDF_Stream; index: HPDF_UINT;
@@ -273,7 +275,7 @@ type
   HPDF_CIDFontDefAttr* = ptr HPDF_CIDFontDefAttr_Rec
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_CIDFontDef_New*(mmgr: HPDF_MMgr; name: cstring;
                          init_fn: HPDF_FontDef_InitFunc): HPDF_FontDef {.importc.}
 proc HPDF_CIDFontDef_AddWidth*(fontdef: HPDF_FontDef; widths: ptr HPDF_CID_Width): HPDF_STATUS {.importc.}

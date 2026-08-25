@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_streams.h
 ##
@@ -24,7 +26,7 @@ const
   HPDF_STREAM_SIG_BYTES* = 0x5354524D
 
 type
-  HPDF_StreamType* = enum
+  HPDF_StreamType* {.size: sizeof(cint).} = enum
     HPDF_STREAM_UNKNOWN = 0, HPDF_STREAM_CALLBACK, HPDF_STREAM_FILE,
     HPDF_STREAM_MEMORY
 
@@ -38,17 +40,17 @@ const
   HPDF_STREAM_FILTER_CCITT_DECODE* = 0x1000
 
 type
-  HPDF_WhenceMode* = enum
+  HPDF_WhenceMode* {.size: sizeof(cint).} = enum
     HPDF_SEEK_SET = 0, HPDF_SEEK_CUR, HPDF_SEEK_END
   HPDF_Stream_Write_Func* = proc (stream: HPDF_Stream; `ptr`: ptr HPDF_BYTE;
-                               siz: HPDF_UINT): HPDF_STATUS
+                               siz: HPDF_UINT): HPDF_STATUS {.hpdfCall.}
   HPDF_Stream_Read_Func* = proc (stream: HPDF_Stream; `ptr`: ptr HPDF_BYTE;
-                              siz: ptr HPDF_UINT): HPDF_STATUS
+                              siz: ptr HPDF_UINT): HPDF_STATUS {.hpdfCall.}
   HPDF_Stream_Seek_Func* = proc (stream: HPDF_Stream; pos: HPDF_INT;
-                              mode: HPDF_WhenceMode): HPDF_STATUS
-  HPDF_Stream_Tell_Func* = proc (stream: HPDF_Stream): HPDF_INT32
-  HPDF_Stream_Free_Func* = proc (stream: HPDF_Stream)
-  HPDF_Stream_Size_Func* = proc (stream: HPDF_Stream): HPDF_UINT32
+                              mode: HPDF_WhenceMode): HPDF_STATUS {.hpdfCall.}
+  HPDF_Stream_Tell_Func* = proc (stream: HPDF_Stream): HPDF_INT32 {.hpdfCall.}
+  HPDF_Stream_Free_Func* = proc (stream: HPDF_Stream) {.hpdfCall.}
+  HPDF_Stream_Size_Func* = proc (stream: HPDF_Stream): HPDF_UINT32 {.hpdfCall.}
   HPDF_MemStreamAttr_Rec* {.bycopy.} = object
     buf*: HPDF_List
     buf_siz*: HPDF_UINT
@@ -76,7 +78,7 @@ type
 
 
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_MemStream_New*(mmgr: HPDF_MMgr; buf_siz: HPDF_UINT): HPDF_Stream {.importc.}
 proc HPDF_MemStream_GetBufPtr*(stream: HPDF_Stream; index: HPDF_UINT;
                               length: ptr HPDF_UINT): ptr HPDF_BYTE {.importc.}
@@ -106,9 +108,7 @@ proc HPDF_Stream_Read*(stream: HPDF_Stream; `ptr`: ptr HPDF_BYTE; size: ptr HPDF
 proc HPDF_Stream_ReadLn*(stream: HPDF_Stream; s: cstring; size: ptr HPDF_UINT): HPDF_STATUS {.importc.}
 proc HPDF_Stream_Tell*(stream: HPDF_Stream): HPDF_INT32 {.importc.}
 proc HPDF_Stream_Seek*(stream: HPDF_Stream; pos: HPDF_INT; mode: HPDF_WhenceMode): HPDF_STATUS {.importc.}
-proc HPDF_Stream_EOF*(stream: HPDF_Stream): HPDF_BOOL {.importc.}
 proc HPDF_Stream_Size*(stream: HPDF_Stream): HPDF_UINT32 {.importc.}
-proc HPDF_Stream_Flush*(stream: HPDF_Stream): HPDF_STATUS {.importc.}
 proc HPDF_Stream_WriteEscapeName*(stream: HPDF_Stream; value: cstring): HPDF_STATUS {.importc.}
 proc HPDF_Stream_WriteEscapeText2*(stream: HPDF_Stream; text: cstring; len: HPDF_UINT): HPDF_STATUS {.importc.}
 proc HPDF_Stream_WriteEscapeText*(stream: HPDF_Stream; text: cstring): HPDF_STATUS {.importc.}

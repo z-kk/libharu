@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_doc.h
 ##
@@ -23,7 +25,7 @@ import
   hpdf_font, hpdf_fontdef, hpdf_error, hpdf_mmgr
 
 const
-  HPDF_VER_DEFAULT* = HPDF_VER_12
+  HPDF_VER_DEFAULT* = HPDF_VER_13
 
 type
   HPDF_Doc_Rec* {.bycopy.} = object
@@ -55,7 +57,7 @@ type
 
   HPDF_Doc* = ptr HPDF_Doc_Rec
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_Doc_FindEncoder*(pdf: HPDF_Doc; encoding_name: cstring): HPDF_Encoder {.importc.}
 proc HPDF_Doc_FindFontDef*(pdf: HPDF_Doc; font_name: cstring): HPDF_FontDef {.importc.}
 proc HPDF_Doc_FindFont*(pdf: HPDF_Doc; font_name: cstring; encoding_name: cstring): HPDF_Font {.importc.}

@@ -1,3 +1,5 @@
+include hpdf_lib
+
 ##
 ##  << Haru Free PDF Library >> -- hpdf_pdfa.h
 ##
@@ -18,7 +20,7 @@
 import
   hpdf_doc, hpdf_objects, hpdf_types
 
-{.push dynlib: "libhpdf.so".}
+include hpdf_import
 proc HPDF_PDFA_AppendOutputIntents*(pdf: HPDF_Doc; iccname: cstring;
                                    iccdict: HPDF_Dict): HPDF_STATUS {.importc.}
 proc HPDF_PDFA_SetPDFAConformance*(pdf: HPDF_Doc; pdfatype: HPDF_PDFAType): HPDF_STATUS {.importc.}
