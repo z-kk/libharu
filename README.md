@@ -1,4 +1,4 @@
-# libharu
+# libharu [![nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://github.com/yglukhov/nimble-tag)
 
 Nim bindings and a small convenience layer for
 [libharu](https://github.com/libharu/libharu), a C library for creating PDF
